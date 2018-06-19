@@ -70,23 +70,24 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
     """
     Sends update to namecheap with new IP
     """
-    print("A difference was found. Old IPs were  {} and the new found IP is {}. ".format(ipv4,str(old_ipv4)))
-    try:
-        request_params = {
-            'host': host,
-            'domain': domain,
-            'password': password,
-            'ip': ipv4,
+    if old_ipv4:
+        print("A difference was found. Old IPs were  {} and the new found IP is {}. ".format(ipv4,str(old_ipv4)))
+        try:
+            request_params = {
+                'host': host,
+                'domain': domain,
+                'password': password,
+                'ip': ipv4,
 
-        }
-        params = urllib.urlencode(request_params)
-        response = urllib.urlopen(namecheap_url + params).read()
-        if "<ErrCount>0</ErrCount>" and ipv4 not in response:
-            raise Exception("There was a problem with namecheap DDNS push: " + str(response))
-        else:
-            print("Namecheap was updated from {} to {} at .".format(ipv4,str(old_ipv4),str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))))
-    except:
-        raise Exception("There was a problem with namecheap DDNS push: " + str(traceback.format_exc()))
+            }
+            params = urllib.urlencode(request_params)
+            response = urllib.urlopen(namecheap_url + params).read()
+            if "<ErrCount>0</ErrCount>" and ipv4 not in response:
+                raise Exception("There was a problem with namecheap DDNS push: " + str(response))
+            else:
+                print("Namecheap was updated from {} to {} at .".format(ipv4,str(old_ipv4),str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))))
+        except:
+            raise Exception("There was a problem with namecheap DDNS push: " + str(traceback.format_exc()))
 
 def main():
 
@@ -106,6 +107,8 @@ def main():
             namecheap_url = config.get('dynamic_dns','namecheap_url')
             frequency = config.get('dynamic_dns','frequency')
             url = "{}.{}".format(host,domain)
+            if not host or not domain or not password or not namecheap_url:
+                raise Exception("Fill in the configuration file fully.")
         except:
             raise Exception("Config load in failed. Make sure config is in /opt/main.conf. Error: " + str(traceback.format_exc()))
         try:
@@ -133,4 +136,4 @@ if __name__ == '__main__':
 
     #testing
     # ip_list = ["173.20.144.128","8.8.8.8"]
-    # check_ip_versions("173.20.144.158",ip_list)
+    # check_ip_versions("173.20.144.138",ip_list)

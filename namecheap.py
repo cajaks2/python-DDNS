@@ -106,6 +106,8 @@ def main():
             password = config.get('dynamic_dns','password')
             namecheap_url = config.get('dynamic_dns','namecheap_url')
             frequency = config.get('dynamic_dns','frequency')
+            if int(frequency) < 5:
+                frequency = 5 
             url = "{}.{}".format(host,domain)
             if not host or not domain or not password or not namecheap_url:
                 raise Exception("Fill in the configuration file fully.")

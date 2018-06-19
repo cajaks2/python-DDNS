@@ -9,18 +9,15 @@ These instructions will get you a copy of the project up and running on your loc
 
 Best way to run this is via docker with instructions below. It does require a fleshed out config file including your namecheap ddns password which can be generated on the advanced DNS page of your domain. 
 The config is layed out like 
+```
 [dynamic_dns]
 
 host = 
-
 domain = 
-
 password = 
-
 frequency = 15
-
 namecheap_url = https://dynamicdns.park-your-domain.com/update?
-
+```
 
 Frequency is in minutes, I would advise to not go below 5 minutes or above the minutes in a day. 
 

@@ -1,18 +1,15 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import urllib
-import ConfigParser
-import pycurl
+import configparser
 import json
-from StringIO import StringIO
+from io import StringIO
 import dns.resolver
 import traceback
 import re
-import urllib
 import time
 import datetime
-
+import requests
 
 def get_local_ip4():
     """
@@ -22,17 +19,10 @@ def get_local_ip4():
     try:
         public_ip = ""
         ip_v4_url = "https://ipinfo.io"
-        text_buffer = StringIO()
-        c = pycurl.Curl()
-        c.setopt(c.URL, str(ip_v4_url))
-        c.setopt(c.WRITEFUNCTION, text_buffer.write)
-        c.setopt(c.FOLLOWLOCATION, True)
-        c.perform()
-        if int(c.getinfo(c.RESPONSE_CODE)) != 200:
-            raise Exception("Failure to get IP: " + str(c.getinfo(c.RESPONSE_CODE)))
-        print("Total time taken to get IP was " +str(c.getinfo(c.TOTAL_TIME)) + " seconds.")
-        c.close()
-        data = json.loads(text_buffer.getvalue())
+        response = requests.get(ip_v4_url)
+        if int(response.status_code) != 200:
+            raise Exception("Failure to get IP: " + str(response.status_code))
+        data = json.loads(response.text)
         public_ip = data['ip']
     except:
         print("There was an exception: " + str(traceback.format_exc()))
@@ -80,9 +70,8 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
                 'ip': ipv4,
 
             }
-            params = urllib.urlencode(request_params)
-            response = urllib.urlopen(namecheap_url + params).read()
-            if "<ErrCount>0</ErrCount>" and ipv4 not in response:
+            response = requests.post(namecheap_url, request_params)
+            if int(response.status_code) != 200:
                 raise Exception("There was a problem with namecheap DDNS push: " + str(response))
             else:
                 print("Namecheap was updated from {} to {} at .".format(ipv4,str(old_ipv4),str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))))
@@ -99,7 +88,8 @@ def main():
     print("Starting at " + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")))
     while True:
         try:
-            config = ConfigParser.RawConfigParser()
+
+            config = configparser.RawConfigParser()
             config.read('/opt/main.conf')
             host = config.get('dynamic_dns','host')
             domain = config.get('dynamic_dns','domain')

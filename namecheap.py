@@ -61,7 +61,7 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
     Sends update to namecheap with new IP
     """
     if old_ipv4:
-        print("A difference was found. Old IPs were {} and the new found IP is {}. ".format(' '.join(old_ipv4),ipv4))
+        print("A difference was found for domain {}.{}. Old IPs were {} and the new found IP is {}. ".format(host,domain,' '.join(old_ipv4),ipv4))
         request_params = {
             'host': host,
             'domain': domain,
@@ -71,7 +71,10 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
         }
         response = requests.post(namecheap_url, request_params)
         if int(response.status_code) != 200 or "<ErrCount>0</ErrCount>" not in response.text:
-            raise Exception("There was a problem with namecheap DDNS push: " + response.text)
+            if "Domain name not found" in response.text:
+                print("According to namecheap, the domain name was invalid. Wait an hour and if its still happening check your config.")
+            else:
+                raise Exception("There was a problem with namecheap DDNS push: " + response.text)
         else:
             print("Namecheap was updated from {} to {} at {} for domain {}.{}.".format(' '.join(old_ipv4),ipv4,str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")),host,domain))
 
@@ -103,12 +106,15 @@ def main():
         try:
             current_dns_ipv4 = get_dns_ip4(url)
             current_local_ipv4 = get_local_ip4()
+            change_occured = 0
             if current_local_ipv4:
                 if current_dns_ipv4:
                     if check_ip_versions(current_local_ipv4, current_dns_ipv4):
-                        send_update(host, domain, password, namecheap_url, current_local_ipv4,current_dns_ipv4)
+                        change_occured += 1
                 else:
-                    send_update(host, domain, password, namecheap_url, current_local_ipv4,current_dns_ipv4)
+                    change_occured += 1
+            if change_occured > 0:
+                send_update(host, domain, password, namecheap_url, current_local_ipv4,current_dns_ipv4)
         except:
             print("There was an exception: " + str(traceback.format_exc()))
         time_to_sleep = int(frequency) * 60

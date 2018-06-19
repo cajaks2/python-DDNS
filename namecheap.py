@@ -67,9 +67,8 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
             'domain': domain,
             'password': password,
             'ip': ipv4,
-
         }
-        response = requests.post(namecheap_url, request_params)
+        response = requests.get(namecheap_url, request_params)
         if int(response.status_code) != 200 or "<ErrCount>0</ErrCount>" not in response.text:
             if "Domain name not found" in response.text:
                 print("According to namecheap, the domain name was invalid. Wait an hour and if its still happening check your config.")
@@ -78,7 +77,7 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
                 raise Exception("There was a problem with namecheap DDNS push: " + response.text)
         else:
             print("Namecheap was updated from {} to {} at {} for domain {}.{}.".format(' '.join(old_ipv4),ipv4,str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")),host,domain))
-
+            print("It may take some time to reflect in their servers.")
 def main():
 
     url = ""
@@ -92,6 +91,7 @@ def main():
 
             config = configparser.RawConfigParser()
             config.read('/opt/main.conf')
+            #for each_section in conf.sections():
             host = config.get('dynamic_dns','host')
             domain = config.get('dynamic_dns','domain')
             password = config.get('dynamic_dns','password')

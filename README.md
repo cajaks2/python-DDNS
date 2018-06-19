@@ -32,6 +32,10 @@ To run with docker run a variant of
 ```
 docker run -it -v `pwd`/personal.conf:/opt/main.conf cajaks2/python-ddns
 ```
+For detached 
+```
+docker run -td -v `pwd`/flowy.conf:/opt/main.conf python_ddns_alpine:latest
+```
 Be sure to pass through your config file. 
 
 

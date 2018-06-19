@@ -61,22 +61,19 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
     Sends update to namecheap with new IP
     """
     if old_ipv4:
-        print("A difference was found. Old IPs were  {} and the new found IP is {}. ".format(ipv4,str(old_ipv4)))
-        try:
-            request_params = {
-                'host': host,
-                'domain': domain,
-                'password': password,
-                'ip': ipv4,
+        print("A difference was found. Old IPs were  {} and the new found IP is {}. ".format(str(old_ipv4),ipv4))
+        request_params = {
+            'host': host,
+            'domain': domain,
+            'password': password,
+            'ip': ipv4,
 
-            }
-            response = requests.post(namecheap_url, request_params)
-            if int(response.status_code) != 200:
-                raise Exception("There was a problem with namecheap DDNS push: " + str(response))
-            else:
-                print("Namecheap was updated from {} to {} at .".format(ipv4,str(old_ipv4),str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))))
-        except:
-            raise Exception("There was a problem with namecheap DDNS push: " + str(traceback.format_exc()))
+        }
+        response = requests.post(namecheap_url, request_params)
+        if int(response.status_code) != 200 or "<ErrCount>0</ErrCount>" not in response.text:
+            raise Exception("There was a problem with namecheap DDNS push: " + response.text)
+        else:
+            print("Namecheap was updated from {} to {} at {} for domain {}.{}.".format(str(old_ipv4),ipv4,str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")),host,domain))
 
 def main():
 

@@ -73,6 +73,7 @@ def send_update(host="",domain="",password="",namecheap_url = "", ipv4="",old_ip
         if int(response.status_code) != 200 or "<ErrCount>0</ErrCount>" not in response.text:
             if "Domain name not found" in response.text:
                 print("According to namecheap, the domain name was invalid. Wait an hour and if its still happening check your config.")
+                print(response.text)
             else:
                 raise Exception("There was a problem with namecheap DDNS push: " + response.text)
         else:

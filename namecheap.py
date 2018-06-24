@@ -10,6 +10,7 @@ import re
 import time
 import datetime
 import requests
+import ipaddr
 
 def get_local_ip4():
     """
@@ -48,9 +49,14 @@ def check_ip_versions(current_local_ipv4="",dns_ipv4=[]):
     Checks if the DNS ip and local ip are different, if so return true  
     """
     different = True
-    counter = 0 
+    counter = 0
+    try:
+        current_local_ipv4_check = ipaddr.IPAddress(current_local_ipv4)
+    except:
+        different = False #failed to get a valid IP
+        print("Invalid IP {} for ip gotten from ipinfo.")
     for dns_ip in dns_ipv4:
-        if current_local_ipv4 in str(dns_ip):
+        if current_local_ipv4 in str(dns_ip).strip():
             counter += 1
     if counter > 0:
         different = False

@@ -131,11 +131,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #get_dns_ip4("home.flowy.us")
 
 
 
-
-    #testing
-    # ip_list = ["173.20.144.128","8.8.8.8"]
-    # check_ip_versions("173.20.144.138",ip_list)

@@ -1,6 +1,6 @@
-FROM python:alpine
-RUN apk add --no-cache python3   
-RUN pip install requests dnspython pprint ipaddr
+ARG ARCH=
+FROM ${ARCH}python:alpine
+RUN pip install requests dnspython ipaddr
 ADD main.conf /opt/main.conf
 ADD namecheap.py /opt/
 CMD ["python", "/opt/namecheap.py"]

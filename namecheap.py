@@ -11,6 +11,7 @@ import time
 import datetime
 import requests
 import ipaddr
+import argparse
 
 def get_local_ip4():
     """
@@ -88,15 +89,17 @@ def main():
 
     url = ""
     host = ""
-    domain = "" 
-    namecheap_url = "" 
+    domain = ""
+    namecheap_url = ""
     frequency = 5 #minutes
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--conf", help="Alertnate full path to source file for conf.", default="/opt/main.conf")
     print("Starting at " + str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")))
+    args = parser.parse_args()
     while True:
         try:
-
             config = configparser.RawConfigParser()
-            config.read('/opt/main.conf')
+            config.read(args.conf)
             #for each_section in conf.sections():
             host = config.get('dynamic_dns','host')
             domain = config.get('dynamic_dns','domain')

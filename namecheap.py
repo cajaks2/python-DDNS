@@ -38,7 +38,7 @@ def get_dns_ip4(url=""):
     string_list_ips = []
     try:
         resolver = dns.resolver.Resolver(); 
-        answers = dns.resolver.query(url,'A')
+        answers = dns.resolver.resolve(url,'A')
     except:
         print("There was an exception: " + str(traceback.format_exc()))
     for ip in answers:

@@ -35,10 +35,23 @@ docker run -td -v `pwd`/example.conf:/opt/main.conf cajaks2/python-ddns
 ```
 Be sure to pass through your config file. 
 
+## Multi-Platform Build
+Assuming you're using Docker Desktop 2.5+ follow these instructions to use buildx for multiplatform builds
+```
+docker context create node-arm64
+docker context create node-amd64
 
+docker buildx create --use --name mybuild node-arm6
+docker buildx create --use --append --name mybuild node-amd64
+```
+Once the contexts and builders are created you can than use buildx build
+```
+docker buildx build --platform linux/arm64/v8,linux/amd64 --push --tag cdower/python-ddns:latest .
+```
 ## Authors
 
 * **Cooper Jackson** 
+* **Chris Dower**
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

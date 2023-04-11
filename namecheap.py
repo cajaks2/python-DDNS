@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 import configparser
@@ -100,6 +100,7 @@ def main():
         try:
             config = configparser.RawConfigParser()
             config.read(args.conf)
+            print("Reading config %s" % (args.conf))
             #for each_section in conf.sections():
             host = config.get('dynamic_dns','host')
             domain = config.get('dynamic_dns','domain')
